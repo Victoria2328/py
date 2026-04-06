@@ -47,7 +47,6 @@ INSTALLED_APPS = [
     'ventas',
     'crispy_forms',
     'crispy_bootstrap4',
-    'pedidos',
 ]
 
 MIDDLEWARE = [
@@ -65,7 +64,7 @@ ROOT_URLCONF = 'core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -132,20 +131,16 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 AUTH_USER_MODEL = 'usuarios.Usuario'
-LOGIN_REDIRECT_URL = 'redireccion_rol'
-# settings.py
-
-# Al salir, que vaya al home sí o sí
-LOGOUT_REDIRECT_URL = 'home'
-
-# Esto obliga a que la sesión expire al cerrar el navegador
-SESSION_EXPIRE_AT_BROWSER_CLOSE = True
-
-# Evita que el navegador guarde datos de sesión en scripts
-SESSION_COOKIE_HTTPONLY = True 
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap4"
 CRISPY_TEMPLATE_PACK = "bootstrap4"
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-SECURE_CROSS_ORIGIN_OPENER_POLICY = None
+# Esto soluciona el error de la imagen: le dice a Django dónde está TU login
+LOGIN_URL = 'login'
+
+# Esto define a dónde ir después de entrar (al panel)
+LOGIN_REDIRECT_URL = 'home'
+
+# Esto define a dónde ir al salir
+LOGOUT_REDIRECT_URL = 'login'

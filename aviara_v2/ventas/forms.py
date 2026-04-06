@@ -1,14 +1,15 @@
 from django import forms
-from django.contrib.auth import get_user_model
-from django.contrib.auth.forms import UserCreationForm
+from .models import Pedido
 
-User = get_user_model()
-
-class RegistroForm(UserCreationForm):
-    email = forms.EmailField(required=True, label="Correo Electrónico")
-    first_name = forms.CharField(max_length=30, label="Nombre")
-    last_name = forms.CharField(max_length=30, label="Apellido")
-
+class PedidoForm(forms.ModelForm):
     class Meta:
-        model = User
-        fields = ["username", "email", "first_name", "last_name"]
+        model = Pedido
+        # Usamos exactamente los nombres de tu modelo
+        fields = ['cliente', 'estado', 'direccion', 'completado']
+        
+        widgets = {
+            'cliente': forms.Select(attrs={'class': 'form-control'}),
+            'estado': forms.Select(attrs={'class': 'form-control'}),
+            'direccion': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej: Calle 10 #20-30'}),
+            'completado': forms.CheckboxInput(attrs={'class': 'form-check-input ml-2'}),
+        }

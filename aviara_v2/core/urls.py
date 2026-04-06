@@ -15,47 +15,39 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
+# core/urls.py
 from django.contrib import admin
 from django.urls import path, include
+from django.contrib.auth import views as auth_views
 from usuarios import views as usuarios_views
-from ventas import views as ventas_views
 from inventario import views as inventario_views
-from django.conf import settings
 from django.conf.urls.static import static
-from produccion import views as produccion_views
-from produccion import views as produccion_views
-from pedidos import views as pedidos_views
- 
+from django.conf import settings
+
 urlpatterns = [
-    # 1. Administración nativa y Autenticación
     path('admin/', admin.site.urls),
-    path('accounts/', include('django.contrib.auth.urls')),
-
-    # 2. Módulo de Usuarios (Dashboard, Registro y Redirección)
-    path('panel/', usuarios_views.admin_dashboard, name='dashboard'),
+    
+    # --- Autenticación (Nombres limpios) ---
+    path('login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
+    path('salir/', usuarios_views.salir, name='logout'),
     path('registro/', usuarios_views.registro_view, name='registro'),
-    # CORRECCIÓN: Usamos usuarios_views para encontrar la función
-    path('check-auth/', usuarios_views.redireccion_segun_rol, name='redireccion_rol'),
 
-    # 3. Página Principal (Home)
-    path('', ventas_views.home_view, name='home'),
-    path('produccion/', produccion_views.lista_produccion, name='lista_produccion'),
+    # --- El Dashboard ---
+    path('', usuarios_views.dashboard, name='home'),
+    path('panel/', usuarios_views.dashboard), 
 
-
-    # 4. Reportes y PDF
-    path('exportar-pdf/', inventario_views.exportar_inventario_pdf, name='exportar_pdf'),
-    path('produccion/pdf/', produccion_views.pdf_produccion, name='pdf_produccion'),
-
-    # 5. Inclusión de módulos (Apps)
+    # --- Aplicaciones (Modularizadas) ---
     path('inventario/', include('inventario.urls')),
+    path('productos/', include('productos.urls')), # Aquí reside 'produccion_lista'
     path('ventas/', include('ventas.urls')),
-    path('catalogo/', include('productos.urls')), 
-    path('carrito/', include('carrito.urls')),
     path('produccion/', include('produccion.urls')),
-    path('pedidos/', include('pedidos.urls')),
+    path('carrito/', include('carrito.urls')),
+
+    # --- Reportes Globales ---
+    # Lo mantenemos aquí si quieres acceso directo desde el Dashboard principal
+    path('exportar-pdf/', inventario_views.exportar_inventario_pdf, name='exportar_pdf'),
 
 ]
-
-# Configuración para servir archivos multimedia (Imágenes de productos)
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

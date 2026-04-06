@@ -1,31 +1,28 @@
 from django import forms
-from .models import StockAgricola
+from .models import StockHuevo, StockAgricola
 
-class SuministroForm(forms.ModelForm):
+class HuevoForm(forms.ModelForm):
+    class Meta:
+        model = StockHuevo
+        fields = ['produccion', 'cantidad_disponible', 'fecha_vencimiento']
+        widgets = {
+            'fecha_vencimiento': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'produccion': forms.Select(attrs={'class': 'form-control'}),
+            'cantidad_disponible': forms.NumberInput(attrs={'class': 'form-control'}),
+        }
+
+class AgricolaForm(forms.ModelForm):
     class Meta:
         model = StockAgricola
-        # Estos son los 4 campos exactos de tu modelo:
-        fields = ['producto', 'cantidad_disponible', 'fecha_cosecha', 'fecha_vencimiento']
+        # Opción A: Usar '__all__' para que no se te escape ninguno
+        fields = '__all__' 
+        
+        # O Opción B: Listarlos explícitamente si 'fecha_vencimiento' es requerida
+        # fields = ['producto', 'cantidad_disponible', 'fecha_cosecha', 'fecha_vencimiento']
         
         widgets = {
+            'fecha_cosecha': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'fecha_vencimiento': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
             'producto': forms.Select(attrs={'class': 'form-control'}),
-            'cantidad_disponible': forms.NumberInput(attrs={
-                'class': 'form-control', 
-                'step': '0.01',
-                'placeholder': '0.00'
-            }),
-            'fecha_cosecha': forms.DateInput(attrs={
-                'class': 'form-control', 
-                'type': 'date'
-            }),
-            'fecha_vencimiento': forms.DateInput(attrs={
-                'class': 'form-control', 
-                'type': 'date'
-            }),
-        }
-        labels = {
-            'producto': 'Producto Agrícola',
-            'cantidad_disponible': 'Cantidad en Stock',
-            'fecha_cosecha': 'Fecha de Cosecha',
-            'fecha_vencimiento': 'Fecha de Vencimiento',
+            'cantidad_disponible': forms.NumberInput(attrs={'class': 'form-control'}),
         }

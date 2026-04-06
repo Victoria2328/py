@@ -6,32 +6,15 @@ from ventas.models import Pedido, ItemPedido
 from django.contrib import messages
 
 
-# ===== PEDIDO =====
+# ===== VER CARRITO =====
 @login_required(login_url='login')
-def procesar_pedido(request):
-    carrito = Carrito(request)
+def ver_carrito(request):
+    carrito = request.session.get("carrito", {})
 
-    if not request.session.get("carrito"):
-        messages.warning(request, "Tu carrito está vacío.")
-        return redirect("catalogo")
+    if not carrito:
+        messages.info(request, "Tu carrito está vacío.")
 
-    pedido = Pedido.objects.create(user=request.user)
-
-    for key, value in request.session.get("carrito", {}).items():
-        variacion = get_object_or_404(VariacionProducto, id=key)
-
-        ItemPedido.objects.create(
-            pedido=pedido,
-            user=request.user,
-            variacion=variacion,
-            cantidad=value["cantidad"],
-            precio_unitario=value["precio"]
-        )
-
-    carrito.limpiar()
-
-    messages.success(request, "¡Tu pedido en Aviara ha sido recibido con éxito!")
-    return redirect("catalogo")
+    return render(request, 'carrito/ver_carrito.html')
 
 
 # ===== AGREGAR =====
@@ -39,10 +22,10 @@ def procesar_pedido(request):
 def agregar_producto(request, variacion_id):
     carrito = Carrito(request)
     variacion = get_object_or_404(VariacionProducto, id=variacion_id)
-    carrito.agregar(variacion=variacion)
-    if not request.user.is_authenticated:
-        return redirect('login')
 
+    carrito.agregar(variacion=variacion)
+
+    return redirect(request.META.get('HTTP_REFERER', 'catalogo'))
 
 
 # ===== ELIMINAR =====
@@ -73,15 +56,28 @@ def limpiar_carrito(request):
     carrito = Carrito(request)
     carrito.limpiar()
 
+    messages.success(request, "Carrito vaciado correctamente.")
+
     return redirect("carrito:ver_carrito")
+  # ajusta según tus modelos
 
-
-# ===== VER =====
 @login_required(login_url='login')
-def ver_carrito(request):
-    carrito = request.session.get("carrito", {})
+def carrito_view(request):
+    # obtener o crear carrito del usuario
+    carrito, created = Carrito.objects.get_or_create(usuario=request.user, activo=True)
+    
+    #items = ItemCarrito.objects.filter(carrito=carrito)
+    #total = sum(item.variacion.precio * item.cantidad for item in items)
 
-    if not carrito:
-        messages.info(request, "Tu carrito está vacío.")
+    context = {
+        'carrito': carrito,
+        #'items': items,
+        #'total': total
+    }
+    return render(request, 'ventas/carrito.html', context)
 
-    return render(request, 'carrito/ver_carrito.html')
+
+# carrito/views.py
+
+def procesar_pedido(request):
+    return redirect('home')

@@ -1,15 +1,14 @@
 from django import forms
-from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
+# IMPORTA TU MODELO PERSONALIZADO
+from .models import Usuario 
 
 class RegistroForm(UserCreationForm):
-    # Aquí van tus campos personalizados si los tienes
-    class Meta:
-        model = User
+    class Meta(UserCreationForm.Meta):
+        model = Usuario  # <--- Esto es lo más importante
         fields = ['username', 'email', 'first_name', 'last_name']
 
-# También deberías tener el que hicimos antes para editar
 class UserEditForm(forms.ModelForm):
     class Meta:
-        model = User
+        model = Usuario
         fields = ['username', 'email', 'first_name', 'last_name', 'is_staff', 'is_active']

@@ -1,44 +1,30 @@
-# productos/views.py
-from django.shortcuts import render
+import requests
+from django.shortcuts import render, redirect
 from .models import Producto
-import json
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt # Opcional si usas el token correctamente
 
-def catalogo_publico(request):
-    # Traemos los productos con sus variaciones (precios) de una vez
-    productos_db = Producto.objects.all().prefetch_related('variaciones')
-    
-    context = {
-        'productos': productos_db,
-    }
-    # Asegúrate de que el archivo esté en esta ruta exacta:
-    return render(request, 'productos/catalogo.html', context)
+# Nueva API: Trae categorías de comida (Pollo, Carne, Vegetales, etc.)
+FOOD_API_URL = "https://www.themealdb.com/api/json/v1/1/categories.php"
 
+# CLIENTE: Se queda igual (Base de datos local)
+def lista_productos_api(request):
+    productos_locales = Producto.objects.all()
+    return render(request, 'productos/lista_productos.html', {'productos': productos_locales})
 
-def procesar_pedido(request):
-    if request.method == 'POST':
-        try:
-            # Cargamos los datos del cuerpo de la petición (JSON)
-            carrito = json.loads(request.body)
-            
-            # --- AQUÍ ESTÁ LA MAGIA ---
-            # Por ahora, imprimimos en la consola de VS Code / Terminal
-            print("\n" + "="*30)
-            print("🚀 ¡NUEVO PEDIDO RECIBIDO!")
-            print("="*30)
-            
-            total_general = 0
-            for id_v, info in carrito.items():
-                subtotal = info['price'] * info['qty']
-                total_general += subtotal
-                print(f"📦 {info['name']} | Cant: {info['qty']} | Sub: ${subtotal}")
-            
-            print(f"\n TOTAL DEL PEDIDO: ${total_general}")
-            print("="*30 + "\n")
+# ADMIN: Ahora con comida real
+def admin_productos_api(request):
+    try:
+        response = requests.get(FOOD_API_URL, timeout=5)
+        data = response.json()
+        # La API de comida guarda la lista en 'categories'
+        productos_externos = data.get('categories', [])
+    except:
+        productos_externos = []
+        
+    return render(request, 'productos/lista_productos_api.html', {
+        'productos': productos_externos,
+        'es_comida': True
+    })
 
-            return JsonResponse({'status': 'success', 'message': 'Pedido recibido'})
-        except Exception as e:
-            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
-    
-    return JsonResponse({'status': 'error'}, status=405)
+# Esta función DEBE existir para que no te dé el AttributeError en las URLs
+def crear_producto_api(request):
+    return render(request, 'productos/form_producto_api.html')

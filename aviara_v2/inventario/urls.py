@@ -1,16 +1,22 @@
 from django.urls import path
-from .import views
+from . import views
 
-urlpatterns =[
-    # Lectura: Lista completa de suministros y huevos
+urlpatterns = [
+    # Ruta principal del inventario
     path('lista/', views.lista_inventario, name='inventario_list'),
-
-    # Creación: Formulario para nuevo suministro agrícola
-    path('nuevo/', views.crear_suministro, name='crear_suministro'),
-
-    # Actualización: Editar un suministro específico usando su ID (pk)
-    path('editar/<int:pk>/', views.editar_suministro, name='editar_suministro'),
-
-    # Borrado: Eliminar un suministro específico
-    path('eliminar/<int:pk>/', views.eliminar_suministro, name='eliminar_suministro'),
+    path('lista-alias/', views.lista_inventario, name='lista'), # Para retrocompatibilidad
+    
+    # CRUD de Huevos
+    path('huevos/crear/', views.gestionar_huevos, name='crear_huevos'),
+    path('huevos/editar/<int:pk>/', views.gestionar_huevos, name='editar_huevos'),
+    
+    # CRUD de Agrícola
+    path('agricola/crear/', views.gestionar_agricola, name='crear_agricola'),
+    path('agricola/editar/<int:pk>/', views.gestionar_agricola, name='editar_agricola'),
+    
+    # Eliminar (Genérico)
+    path('eliminar/<str:tipo>/<int:pk>/', views.eliminar_item, name='eliminar_item'),
+    
+    # Reportes
+    path('exportar-pdf/', views.exportar_inventario_pdf, name='exportar_pdf'),
 ]

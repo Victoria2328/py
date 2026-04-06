@@ -1,9 +1,14 @@
-# productos/urls.py
 from django.urls import path
 from . import views
-# productos/urls.py
+
 urlpatterns = [
-    # Cambiamos 'catalogo_usuario' por 'lista_productos'
-    path('', views.catalogo_publico, name='lista_productos'), 
-    path('procesar-pedido/', views.procesar_pedido, name='procesar_pedido'),
+    # Catálogo cliente (Base de datos local)
+    path('', views.lista_productos_api, name='catalogo'),
+    
+    # Panel Admin (API Externa)
+    path('admin-api/', views.admin_productos_api, name='productos_api'),
+    
+    # Rutas de creación (Para que no den error)
+    path('nuevo/', views.crear_producto_api, name='crear_producto_api'),
+    path('nuevo-suministro/', views.crear_producto_api, name='crear_suministro'),
 ]

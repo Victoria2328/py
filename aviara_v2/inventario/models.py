@@ -2,8 +2,6 @@ from django.db import models
 from django.conf import settings
 from produccion.models import validar_fecha_no_pasada
 from django.core.validators import MinValueValidator
-# Usamos strings para las relaciones para evitar errores de importación circular
-# 'produccion.ProduccionHuevos' y 'produccion.ProductoAgricola'
 
 class StockHuevo(models.Model):
     produccion = models.OneToOneField('produccion.ProduccionHuevos', on_delete=models.CASCADE)

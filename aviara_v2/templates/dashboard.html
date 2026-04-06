@@ -35,7 +35,7 @@
                     <h6 class="text-success font-weight-bold">PRODUCTOS</h6>
                     <p class="text-muted small">Catálogo de productos (API).</p>
                     <div class="mt-auto">
-                        <a href="{% url 'lista_productos' %}" class="btn btn-success btn-sm btn-block btn-round">Ver Catálogo (API)</a>
+                        <a href="{% url 'productos_api' %}" class="btn btn-success btn-sm btn-block btn-round">Ver Catálogo (API)</a>
                     </div>
                 </div>
             </div>
@@ -48,7 +48,7 @@
                     <h6 class="text-warning font-weight-bold">PRODUCCIÓN</h6>
                     <p class="text-muted small">Registros de cosecha y lotes.</p>
                     <div class="mt-auto">
-                        <a href="#" class="btn btn-warning btn-sm btn-block btn-round text-white">Registros</a>
+                        <a href="{% url 'produccion_lista' %}" class="btn btn-warning btn-sm btn-block btn-round text-white">Registros</a>
                     </div>
                 </div>
             </div>
@@ -61,7 +61,7 @@
                     <h6 class="text-danger font-weight-bold">PEDIDOS</h6>
                     <p class="text-muted small">Gestión de ventas y clientes.</p>
                     <div class="mt-auto">
-                        <a href="#" class="btn btn-danger btn-sm btn-block btn-round">Ver Ventas</a>
+                        <a href="{% url 'lista_pedidos' %}" class="btn btn-danger btn-sm btn-block btn-round">Ver Ventas</a>
                     </div>
                 </div>
             </div>
