@@ -6,6 +6,7 @@ from .forms import RegistroForm
 from usuarios.models import Usuario
 from django.http import JsonResponse
 from productos.models import Producto
+from .forms import RegistroForm
 
 
 def registro_view(request):
@@ -28,30 +29,28 @@ def salir(request):
 
 @login_required
 def dashboard(request):
-    """
-    Esta vista actúa como un repartidor:
-    - Si es ADMIN: Entra al panel de control (dashboard.html)
-    - Si es USUARIO: Entra a la página estética (home.html)
-    """
-    
-    # Definimos los datos comunes (como las categorías)
-    contexto = {
-        'categorias': [
+    # 1. SI ES ADMINISTRADOR (Cualquiera de los 3 que mencionaste)
+    if request.user.is_staff or request.user.is_superuser:
+        # Al terminar el login, el admin se va al Panel de Control
+        return render(request, 'dashboard.html')
+
+    # 2. SI ES CLIENTE
+    # Al terminar el login, el cliente se va a la Página Principal (Home)
+    if hasattr(request.user, 'rol') and request.user.rol == 'cliente':
+        # Definimos lo que verá el cliente en su home
+        categorias_home = [
             {'id': 'huevos', 'icon': 'egg', 'color': 'warning'},
             {'id': 'pollos', 'icon': 'drumstick-bite', 'color': 'danger'},
             {'id': 'lacteos', 'icon': 'cheese', 'color': 'info'},
-        ],
-    }
+        ]
+        return render(request, 'usuarios/home.html', {
+            'categorias': categorias_home
+        })
 
-    if request.user.is_staff:
-        # --- DESTINO PARA EL ADMINISTRADOR ---
-        return render(request, 'dashboard.html', contexto)
-    else:
-        # --- DESTINO PARA EL USUARIO COMÚN ---
-        # Aquí es donde el cliente verá el banner de los huevos
-        return render(request, 'home.html', contexto)
+    # 3. SI NO TIENE ROL (Por si acaso)
+    return render(request, 'home.html')
+    
 
 
-def productos_api(request):
-    productos = Producto.objects.all().values('id', 'nombre', 'precio') # Ajusta según tus campos
-    return JsonResponse(list(productos), safe=False)
+
+

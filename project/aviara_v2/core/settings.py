@@ -146,3 +146,6 @@ LOGOUT_REDIRECT_URL = 'login'
 # Si intenta entrar a una página protegida sin sesión, mándalo aquí
 LOGIN_URL = 'login'
 
+
+# settings.py
+LOGIN_REDIRECT_URL = 'home'
